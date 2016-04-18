@@ -1,14 +1,29 @@
 <?php
 namespace Teachme\Components;
 use Collective\Html\HtmlBuilder as CollectiveHtmlBuilder;
+use Illuminate\Contracts\Config\Repository as Config;
+use Illuminate\Contracts\View\Factory as View;
+use Illuminate\Routing\UrlGenerator;
+
+
 class HtmlBuilder extends CollectiveHtmlBuilder
 {
+  private $config;
+  private $view;
+
+  public function __construct(Config $config, View $view, UrlGenerator $url)
+  {
+    $this->config = $config;
+    $this->view   = $view;
+    $this->url    = $url;
+  }
+
   public function menu($items)
   {
     if (!is_array($items)) {
-      $items = config($items, array());
+      $items = $this->config->get($items, array());
     }
-     return view('partials/menu', compact('items'));
+     return $this->view->make('partials/menu', compact('items'));
   }
 
   /**
@@ -38,5 +53,5 @@ class HtmlBuilder extends CollectiveHtmlBuilder
           return ' class="'.trim($html).'"';
       }
       return '';
-  }  
+  }
 }
